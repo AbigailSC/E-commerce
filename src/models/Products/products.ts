@@ -40,7 +40,8 @@ const productSchema = new Schema(
       type: Boolean
     },
     isActive: {
-      type: Boolean
+      type: Boolean,
+      default: true
     },
     favorites: [],
     image: [],
