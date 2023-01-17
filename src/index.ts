@@ -7,6 +7,9 @@ dotenv.config();
 
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
 app.get('/', (_req, res) => {
   res.json({ message: 'Hello world' });
 });
