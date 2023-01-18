@@ -41,6 +41,7 @@ export const getUserById: RequestHandler = async (_req, res) => {
   }
 };
 
+
 export const updateUser: RequestHandler<IUsers> = async (req, res) => {
   const { id } = req.params;
   const { name, address, phone, email, image, password }: IUsers = req.body;
@@ -68,5 +69,20 @@ export const updateUser: RequestHandler<IUsers> = async (req, res) => {
     }
   } catch (error) {
     return res.status(500).json({ message: { error } });
+
+export const deleteUser: RequestHandler = async (_req, res) => {
+  const { idUser } = _req.params;
+
+  try {
+    const deleteUser = await UserSchema.update(
+      { id: idUser },
+      {
+        isActive: false
+      }
+    );
+    return res.status(201).json(deleteUser);
+  } catch (error) {
+    console.error(error);
+
   }
 };
