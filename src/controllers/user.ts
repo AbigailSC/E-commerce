@@ -30,3 +30,13 @@ export const getUsers: RequestHandler = async (_req, res) => {
     console.error(error);
   }
 };
+
+export const getUserById: RequestHandler = async (_req, res) => {
+  const { idUser } = _req.params;
+  try {
+    const user = await UserSchema.findById(idUser);
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+  }
+};
