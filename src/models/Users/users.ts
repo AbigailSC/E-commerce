@@ -5,6 +5,7 @@ export interface IUsers extends Document {
   address: string;
   phone: number;
   password: string;
+  email: string;
   image: string;
   favorites: string[];
   cart: string[];
@@ -26,6 +27,10 @@ const usersSchema = new Schema(
     },
     phone: {
       type: Number,
+      required: true
+    },
+    email: {
+      type: String,
       required: true
     },
     password: {
