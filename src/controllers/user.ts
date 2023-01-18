@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { users as UserSchema } from '@models/Users';
-import { IUsers } from '@models/Users/users';
+import users, { IUsers } from '@models/Users/users';
 
 export const createUser: RequestHandler<IUsers> = async (req, res) => {
   const { name, address, phone, image, role, isActive, password }: IUsers =
@@ -41,6 +41,35 @@ export const getUserById: RequestHandler = async (_req, res) => {
   }
 };
 
+
+export const updateUser: RequestHandler<IUsers> = async (req, res) => {
+  const { id } = req.params;
+  const { name, address, phone, email, image, password }: IUsers = req.body;
+  const findUserById = await users.findById(id);
+  try {
+    if (findUserById != null) {
+      await findUserById.updateOne(
+        {
+          name,
+          address,
+          phone,
+          email,
+          image,
+          password
+        },
+        {
+          where: {
+            id
+          }
+        }
+      );
+      res.send({ msg_message: 'User updated' });
+    } else {
+      res.send({ msg_mesage: 'User not found' });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: { error } });
+
 export const deleteUser: RequestHandler = async (_req, res) => {
   const { idUser } = _req.params;
 
@@ -54,5 +83,6 @@ export const deleteUser: RequestHandler = async (_req, res) => {
     return res.status(201).json(deleteUser);
   } catch (error) {
     console.error(error);
+
   }
 };
