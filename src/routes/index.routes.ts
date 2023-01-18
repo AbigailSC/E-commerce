@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import productRoutes from './products.routes';
+import products from './products.routes';
 import { users } from './User';
 
 const router = Router();
@@ -14,6 +14,6 @@ router.get('/panchoconpapitas', (_req, res) => {
   res.json({ message: 'pancho con papitas' });
 });
 
-router.use('/products', productRoutes);
+router.use('/products', products);
 
 export default router;
