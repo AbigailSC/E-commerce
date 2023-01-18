@@ -21,3 +21,12 @@ export const createUser: RequestHandler<IUsers> = async (req, res) => {
     return res.status(500).json({ message: { error } });
   }
 };
+
+export const getUsers: RequestHandler = async (_req, res) => {
+  try {
+    const allUsers = await UserSchema.find({ isActive: true });
+    res.json(allUsers);
+  } catch (error) {
+    console.error(error);
+  }
+};
