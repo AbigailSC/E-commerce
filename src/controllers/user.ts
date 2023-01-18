@@ -40,3 +40,19 @@ export const getUserById: RequestHandler = async (_req, res) => {
     console.error(error);
   }
 };
+
+export const deleteUser: RequestHandler = async (_req, res) => {
+  const { idUser } = _req.params;
+
+  try {
+    const deleteUser = await UserSchema.update(
+      { id: idUser },
+      {
+        isActive: false
+      }
+    );
+    return res.status(201).json(deleteUser);
+  } catch (error) {
+    console.error(error);
+  }
+};
