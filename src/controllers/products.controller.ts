@@ -74,7 +74,7 @@ export const deleteProduct: RequestHandler = async (_req, res) => {
   const { id } = _req.params;
 
   try {
-    const deleteProduct = await ProductSchema.update(
+    const deleteProduct = await ProductSchema.updateOne(
       { id },
       {
         isActive: false
