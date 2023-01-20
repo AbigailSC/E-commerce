@@ -39,3 +39,31 @@ export const getProductById: RequestHandler = async (req, res) => {
     return res.status(500).json({ message: { error: err } });
   }
 };
+
+export const updateProduct: RequestHandler<IProduct> = async (req, res) => {
+  const { id } = req.params;
+  const { name, description, price, stock }: IProduct = req.body;
+  const findProductById = await Product.findById(id);
+  try {
+    if (findProductById != null) {
+      await findProductById.updateOne(
+        {
+          name,
+          description,
+          price,
+          stock
+        },
+        {
+          where: {
+            id
+          }
+        }
+      );
+      res.send({ msg_message: 'Product updated' });
+    } else {
+      res.send({ msg_message: 'Product not found' });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: { error: err } });
+  }
+};
