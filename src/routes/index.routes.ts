@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import products from './products.routes';
-import { users } from './User';
+import { products } from './Products';
+import { users } from './Users';
 
 const router = Router();
 
-router.use('/user', users);
+router.use('/users', users);
 router.use('/products', products);
 
 export default router;
