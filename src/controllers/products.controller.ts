@@ -24,8 +24,10 @@ export const postProducts: RequestHandler<IProduct> = async (req, res) => {
 
 export const getProducts: RequestHandler = async (_req, res) => {
   try {
-    const products = await ProductSchema.find({ isActived: true });
-    return res.status(200).json(products);
+    const products = await ProductSchema.find({ isActive: true });
+    products.length > 0
+      ? res.json(products)
+      : res.send({ msg_mesage: 'No products found' });
   } catch (err) {
     return res.status(500).json({ message: { error: err } });
   }
@@ -74,13 +76,27 @@ export const deleteProduct: RequestHandler = async (_req, res) => {
   const { id } = _req.params;
 
   try {
-    const deleteProduct = await ProductSchema.updateOne(
-      { id },
-      {
-        isActive: false
-      }
-    );
-    return res.status(201).json(deleteProduct);
+    const deleteProduct = await ProductSchema.findByIdAndUpdate(id, {
+      isActive: false
+    });
+    deleteProduct !== null
+      ? res.status(200).json(deleteProduct)
+      : res.send({ msg_message: 'Product not found' });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const restoreProduct: RequestHandler = async (_req, res) => {
+  const { id } = _req.params;
+
+  try {
+    const restoreProduct = await ProductSchema.findByIdAndUpdate(id, {
+      isActive: true
+    });
+    restoreProduct !== null
+      ? res.status(200).json(restoreProduct)
+      : res.send({ msg_message: 'Product not found' });
   } catch (error) {
     console.error(error);
   }
