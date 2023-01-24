@@ -50,27 +50,19 @@ export const getUserById: RequestHandler = async (_req, res) => {
 export const updateUser: RequestHandler<IUsers> = async (req, res) => {
   const { id } = req.params;
   const { name, address, phone, email, image, password }: IUsers = req.body;
-  const findUserById = await UserSchema.findById(id);
+  const updateUser = await UserSchema.findByIdAndUpdate(id, {
+    name,
+    address,
+    phone,
+    email,
+    image,
+    password
+  });
   try {
-    if (findUserById != null) {
-      await findUserById.updateOne(
-        {
-          name,
-          address,
-          phone,
-          email,
-          image,
-          password
-        },
-        {
-          where: {
-            id
-          }
-        }
-      );
-      res.send({ msg_message: 'User updated' });
+    if (updateUser != null) {
+      res.status(200).json(updateUser);
     } else {
-      res.send({ msg_mesage: 'User not found' });
+      res.status(500).json({ msg_mesage: 'User not found' });
     }
   } catch (error) {
     return res.status(500).json({ message: { error } });
