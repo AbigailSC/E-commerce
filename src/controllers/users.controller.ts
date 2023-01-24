@@ -70,16 +70,29 @@ export const updateUser: RequestHandler<IUsers> = async (req, res) => {
 };
 
 export const deleteUser: RequestHandler = async (_req, res) => {
-  const { idUser } = _req.params;
-
+  const { id } = _req.params;
   try {
-    const deleteUser = await UserSchema.updateOne(
-      { id: idUser },
-      {
-        isActive: false
-      }
-    );
-    return res.status(201).json(deleteUser);
+    const deleteUser = await UserSchema.findByIdAndUpdate(id, {
+      isActive: false
+    });
+    deleteUser !== null
+      ? res.status(200).json(deleteUser)
+      : res.send({ msg_message: 'User not found' });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const restoreUser: RequestHandler = async (_req, res) => {
+  const { id } = _req.params;
+  try {
+    const restoreUser = await UserSchema.findByIdAndUpdate(id, {
+      isActive: true
+    });
+    console.log(restoreUser, 'asdasdasdasdsad');
+    restoreUser !== null
+      ? res.status(200).json(restoreUser)
+      : res.send({ msg_message: 'User not found' });
   } catch (error) {
     console.error(error);
   }

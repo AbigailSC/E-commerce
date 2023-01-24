@@ -4,15 +4,17 @@ import {
   getUsers,
   getUserById,
   updateUser,
-  deleteUser
+  deleteUser,
+  restoreUser
 } from '@controllers/users.controller';
 
 const router: Router = Router();
 
 router.post('/', createUser);
 router.get('/', getUsers);
-router.get('/:idUser', getUserById);
+router.get('/:id', getUserById);
 router.put('/:id', updateUser);
-router.delete('/:idUser', deleteUser);
+router.delete('/:id', deleteUser);
+router.patch('/:id', restoreUser);
 
 export default router;
