@@ -44,26 +44,18 @@ export const getProductById: RequestHandler = async (req, res) => {
 export const updateProduct: RequestHandler<IProduct> = async (req, res) => {
   const { id } = req.params;
   const { name, description, price, stock, image }: IProduct = req.body;
-  const findProductById = await ProductSchema.findById(id);
+  const updateProduct = await ProductSchema.findByIdAndUpdate(id, {
+    name,
+    description,
+    price,
+    stock,
+    image
+  });
   try {
-    if (findProductById != null) {
-      await findProductById.updateOne(
-        {
-          name,
-          description,
-          price,
-          stock,
-          image
-        },
-        {
-          where: {
-            id
-          }
-        }
-      );
-      res.send({ msg_message: 'Product updated' });
+    if (updateProduct != null) {
+      res.status(200).json(updateProduct);
     } else {
-      res.send({ msg_message: 'Product not found' });
+      res.status(500).json({ msg_message: 'Product not found' });
     }
   } catch (err) {
     return res.status(500).json({ message: { error: err } });
