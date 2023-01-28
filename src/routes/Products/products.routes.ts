@@ -5,16 +5,18 @@ import {
   getProductById,
   updateProduct,
   deleteProduct,
-  restoreProduct
+  restoreProduct,
+  getProductsByName
 } from '../../controllers/products.controller';
 
 const router = express.Router();
 
-router.post('', postProducts);
 router.get('', getProducts);
 router.get('/:idProduct', getProductById);
+router.post('', postProducts);
 router.put('/:id', updateProduct);
 router.delete('/:id', deleteProduct);
 router.patch('/:id', restoreProduct);
+router.get('/search/:name', getProductsByName);
 
 export default router;
