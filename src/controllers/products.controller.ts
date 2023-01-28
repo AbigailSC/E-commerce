@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { Product as ProductSchema } from '@models/Products';
 import { IProduct } from '@models/Products/products';
+import { taxes } from '@utils/taxes';
 
 export const postProducts: RequestHandler<IProduct> = async (req, res) => {
   const { name, description, price, stock, image }: IProduct = req.body;
@@ -8,7 +9,7 @@ export const postProducts: RequestHandler<IProduct> = async (req, res) => {
     const newProduct = new ProductSchema({
       name,
       description,
-      price,
+      price: taxes(price),
       stock,
       image,
       isActived: true
