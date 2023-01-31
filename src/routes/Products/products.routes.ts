@@ -6,7 +6,8 @@ import {
   updateProduct,
   deleteProduct,
   restoreProduct,
-  getProductsByName
+  getProductsByName,
+  filterProductsByCategory
 } from '../../controllers/products.controller';
 
 const router = express.Router();
@@ -18,5 +19,6 @@ router.put('/:id', updateProduct);
 router.delete('/:id', deleteProduct);
 router.patch('/:id', restoreProduct);
 router.get('/search/:name', getProductsByName);
+router.get('/category/:category', filterProductsByCategory);
 
 export default router;

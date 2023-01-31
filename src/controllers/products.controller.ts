@@ -109,3 +109,18 @@ export const restoreProduct: RequestHandler = async (_req, res) => {
     console.error(error);
   }
 };
+
+export const filterProductsByCategory: RequestHandler = async (req, res) => {
+  const { category } = req.params;
+  try {
+    const products = await ProductSchema.find({
+      isActive: true,
+      category: { $in: category }
+    });
+    products.length > 0
+      ? res.status(200).json(products)
+      : res.send({ msg_message: 'Products not found' });
+  } catch (err) {
+    return res.status(500).json({ message: { error: err } });
+  }
+};
