@@ -1,4 +1,4 @@
-import express from 'express';
+import { Router } from 'express';
 import {
   postProducts,
   getProducts,
@@ -6,17 +6,40 @@ import {
   updateProduct,
   deleteProduct,
   restoreProduct,
-  getProductsByName
+  getProductsByName,
+  sortProductsByPrice
 } from '../../controllers/products.controller';
+import { verifyRoles } from '@middlewares/auth.middleware';
+import { userRoles } from '@utils/userRoles';
 
-const router = express.Router();
+const router = Router();
 
-router.get('', getProducts);
-router.get('/:idProduct', getProductById);
-router.post('', postProducts);
-router.put('/:id', updateProduct);
-router.delete('/:id', deleteProduct);
-router.patch('/:id', restoreProduct);
-router.get('/search/:name', getProductsByName);
-
+router
+  .route('/')
+  .get(
+    [verifyRoles([userRoles.Admin, userRoles.Client, userRoles.Seller])],
+    getProducts
+  )
+  .post([verifyRoles([userRoles.Seller])], postProducts);
+router
+  .route('/:productId')
+  .get(
+    [verifyRoles([userRoles.Admin, userRoles.Client, userRoles.Seller])],
+    getProductById
+  )
+  .put([verifyRoles([userRoles.Admin, userRoles.Seller])], updateProduct)
+  .delete([verifyRoles([userRoles.Admin, userRoles.Seller])], deleteProduct)
+  .patch([verifyRoles([userRoles.Admin])], restoreProduct);
+router
+  .route('/search/:name')
+  .get(
+    [verifyRoles([userRoles.Admin, userRoles.Seller, userRoles.Client])],
+    getProductsByName
+  );
+router
+  .route('/filter/price/:sort')
+  .get(
+    [verifyRoles([userRoles.Admin, userRoles.Seller, userRoles.Client])],
+    sortProductsByPrice
+  );
 export default router;

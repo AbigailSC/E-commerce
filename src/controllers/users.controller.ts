@@ -1,99 +1,133 @@
 import { RequestHandler } from 'express';
-import { users as UserSchema } from '@models/Users';
-import { IUsers } from '@models/Users/users';
+import { UserSchema } from '@models/User';
+import { IUsers } from '@models/User/User';
+import { validationResult } from 'express-validator';
+import { VerifyRefreshToken } from '@middlewares/authRefresh.middleware';
+import { userRoles } from '@utils/userRoles';
+import { AdminSchema } from '@models/Admin';
+import { ClientSchema } from '@models/Client';
+import { SellerSchema } from '@models/Seller';
 
-export const createUser: RequestHandler<IUsers> = async (req, res) => {
-  const { name, address, phone, email, image, role, password }: IUsers =
-    req.body;
+export const createUser: RequestHandler = async (req, res) => {
+  const { email, rol } = req.body;
   try {
-    const newUser: IUsers = new UserSchema({
-      name,
-      address,
-      phone,
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(400).json({ errors: errors.array() });
+
+    const newUser = new UserSchema({
       email,
-      image,
-      role,
-      isActive: true,
-      password
+      rol,
+      emailVerifyTokenLink: req.cookies.refreshToken
     });
+
     const savedUser = await newUser.save();
     return res.status(201).json(savedUser);
   } catch (error) {
-    return res.status(500).json({ message: { error } });
+    return res.status(500).json({ message: (error as Error).message });
   }
 };
 
 export const getUsers: RequestHandler = async (_req, res) => {
   try {
     const allUsers = await UserSchema.find({ isActive: true });
-
     allUsers.length > 0
       ? res.json(allUsers)
       : res.send({ msg_mesage: 'No users found' });
   } catch (error) {
-    console.error(error);
+    return res.status(500).json({ message: (error as Error).message });
   }
 };
 
-export const getUserById: RequestHandler = async (_req, res) => {
-  const { idUser } = _req.params;
-  try {
-    const user = await UserSchema.findById(idUser);
-    user !== null
-      ? res.json(user)
-      : res.send({ msg_mesage: 'User not found!' });
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-export const updateUser: RequestHandler<IUsers> = async (req, res) => {
+export const getUserById: RequestHandler = async (req, res) => {
   const { id } = req.params;
-  const { name, address, phone, email, image, password }: IUsers = req.body;
-  const updateUser = await UserSchema.findByIdAndUpdate(id, {
-    name,
-    address,
-    phone,
-    email,
-    image,
-    password
-  });
   try {
-    if (updateUser != null) {
-      res.status(200).json(updateUser);
-    } else {
-      res.status(500).json({ msg_mesage: 'User not found' });
-    }
+    const user = await UserSchema.findById(id);
+    user !== null ? res.json(user) : res.send({ message: 'User not found!' });
   } catch (error) {
-    return res.status(500).json({ message: { error } });
+    return res.status(500).json({ message: (error as Error).message });
   }
 };
 
-export const deleteUser: RequestHandler = async (_req, res) => {
-  const { id } = _req.params;
+export const updateUser: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const { password }: IUsers = req.body;
+  try {
+    if (password === undefined)
+      return res.status(400).json({ message: 'Password is required' });
+
+    const updateUser = await UserSchema.findById(id);
+    if (updateUser === null)
+      return res.status(500).json({ message: 'User not found' });
+
+    const encryptedPassword = await updateUser.encryptPassword(password);
+    await UserSchema.findByIdAndUpdate(id, {
+      password: encryptedPassword,
+      verified: true
+    });
+    res.status(200).json({ message: 'User updated' });
+  } catch (error) {
+    return res.status(500).json({ message: (error as Error).message });
+  }
+};
+
+export const deleteUser: RequestHandler = async (req, res) => {
+  const { id } = req.params;
   try {
     const deleteUser = await UserSchema.findByIdAndUpdate(id, {
       isActive: false
     });
     deleteUser !== null
       ? res.status(200).json(deleteUser)
-      : res.send({ msg_message: 'User not found' });
+      : res.send({ message: 'User not found' });
   } catch (error) {
-    console.error(error);
+    return res.status(500).json({ message: (error as Error).message });
   }
 };
 
-export const restoreUser: RequestHandler = async (_req, res) => {
-  const { id } = _req.params;
+export const restoreUser: RequestHandler = async (req, res) => {
+  const { id } = req.params;
   try {
     const restoreUser = await UserSchema.findByIdAndUpdate(id, {
       isActive: true
     });
-    console.log(restoreUser, 'asdasdasdasdsad');
     restoreUser !== null
       ? res.status(200).json(restoreUser)
-      : res.send({ msg_message: 'User not found' });
+      : res.send({ message: 'User not found' });
   } catch (error) {
-    console.error(error);
+    return res.status(500).json({ message: (error as Error).message });
+  }
+};
+
+export const profile: RequestHandler = async (req: VerifyRefreshToken, res) => {
+  const id = req.id;
+  try {
+    const profile = await UserSchema.findById(id);
+    if (profile === null) return res.send({ message: 'User not found' });
+
+    if (profile.rol === userRoles.Admin) {
+      const adminUser = await AdminSchema.findOne({ email: profile.email });
+      return res.json({
+        userId: profile._id,
+        rol: profile.rol,
+        data: adminUser
+      });
+    } else if (profile.rol === userRoles.Client) {
+      const clientUser = await ClientSchema.findOne({ email: profile.email });
+      return res.json({
+        userId: profile._id,
+        rol: profile.rol,
+        data: clientUser
+      });
+    } else if (profile.rol === userRoles.Seller) {
+      const sellerUser = await SellerSchema.findOne({ email: profile.email });
+      return res.json({
+        userId: profile._id,
+        rol: profile.rol,
+        data: sellerUser
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: (error as Error).message });
   }
 };

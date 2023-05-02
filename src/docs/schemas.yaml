@@ -1,0 +1,41 @@
+tags:
+  - name: Cart
+    description: Cart endpoint routes
+  - name: Category
+    description: Categories endpoint routes
+  - name: Favorites
+    description: Favorites endpoint routes
+  - name: History
+    description: History endpoint routes
+  - name: Products
+    description: Products endpoint routes
+  - name: PurchaseDetails
+    description: PurchaseDetails endpoint routes
+  - name: Reviews
+    description: Reviews endpoint routes
+  - name: Tags
+    description: Tags endpoint routes
+  - name: Users
+    description: Users endpoint routes
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        userId:
+          type: string
+          require: true
+          description: The user's Id
+        productId:
+          type: string
+          require: true
+          description: The product's userId
+        quantity:
+          type: number
+          require: true
+          description: The quantity of products
+  parameters:
+    userId:
+      in: path
+      name: userId
+      required: true

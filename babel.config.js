@@ -20,7 +20,11 @@ module.exports = {
           '@utils': './src/utils',
           '@models': './src/models',
           '@services': './src/services',
-          '@middlewares': './src/middlewares'
+          '@middlewares': './src/middlewares',
+          '@config': './src/config',
+          '@interfaces': './src/interfaces',
+          '@docs': './src/docs',
+          '@validations': './src/validations'
         }
       }
     ]

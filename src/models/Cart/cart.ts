@@ -1,24 +1,21 @@
 import { Schema, model, Document } from 'mongoose';
 
 export interface ICart extends Document {
-  idBuyer: string;
-  idProduct: string;
-  quantity: number;
+  clientId: string;
+  products: string[];
 }
 
 const cartSchema = new Schema({
-  idBuyer: {
+  clientId: {
     type: String,
-    require: true
+    required: true
   },
-  idProduct: {
-    type: String,
-    require: true
-  },
-  quantity: {
-    type: Number,
-    require: true
-  }
+  products: [
+    {
+      type: String,
+      required: true
+    }
+  ]
 });
 
 export default model<ICart>('cart', cartSchema);

@@ -1,16 +1,30 @@
-import express from 'express';
+import { Router } from 'express';
 import {
   createCategory,
   deleteCategory,
   getCategories,
-  updateCategory
+  updateCategory,
+  getCategoryById
 } from '@controllers/category.controller';
+import { verifyRoles } from '@middlewares/auth.middleware';
+import { userRoles } from '@utils/userRoles';
 
-const router = express.Router();
+const router = Router();
 
-router.post('/', createCategory);
-router.get('/', getCategories);
-router.put('/:id', updateCategory);
-router.delete('/:id', deleteCategory);
+router
+  .route('/')
+  .get(
+    [verifyRoles([userRoles.Admin, userRoles.Client, userRoles.Seller])],
+    getCategories
+  )
+  .post([verifyRoles([userRoles.Admin])], createCategory);
+router
+  .route('/:id')
+  .get(
+    [verifyRoles([userRoles.Admin, userRoles.Client, userRoles.Seller])],
+    getCategoryById
+  )
+  .put([verifyRoles([userRoles.Admin])], updateCategory)
+  .delete([verifyRoles([userRoles.Admin])], deleteCategory);
 
 export default router;
