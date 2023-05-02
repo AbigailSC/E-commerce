@@ -1,11 +1,13 @@
 import { RequestHandler } from 'express';
-import { Category } from '@models/Category';
-import { ICategory } from '@models/Category/category';
+import { CategorySchema } from '@models/Category';
+import { ICategory } from '@models/Category/Category';
 
-export const createCategory: RequestHandler<ICategory> = async (req, res) => {
+export const createCategory: RequestHandler = async (req, res) => {
   const { name }: ICategory = req.body;
   try {
-    const newCategory: ICategory = new Category({ name });
+    const newCategory: ICategory = new CategorySchema({
+      name
+    });
     const savedCategory = await newCategory.save();
     return res.status(201).json(savedCategory);
   } catch (error) {
@@ -15,8 +17,18 @@ export const createCategory: RequestHandler<ICategory> = async (req, res) => {
 
 export const getCategories: RequestHandler = async (_req, res) => {
   try {
-    const categories = await Category.find();
+    const categories = await CategorySchema.find();
     return res.status(200).json(categories);
+  } catch (error) {
+    return res.status(500).json({ message: { error } });
+  }
+};
+
+export const getCategoryById: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const category = await CategorySchema.findById(id);
+    return res.status(200).json(category);
   } catch (error) {
     return res.status(500).json({ message: { error } });
   }
@@ -26,7 +38,7 @@ export const updateCategory: RequestHandler = async (req, res) => {
   const { id } = req.params;
   const { name }: ICategory = req.body;
   try {
-    const category = await Category.findById(id);
+    const category = await CategorySchema.findById(id);
     if (category === null) {
       return res.status(404).json({ message: 'Category not found' });
     }
@@ -41,7 +53,7 @@ export const updateCategory: RequestHandler = async (req, res) => {
 export const deleteCategory: RequestHandler = async (req, res) => {
   const { id } = req.params;
   try {
-    const category = await Category.findById(id);
+    const category = await CategorySchema.findById(id);
     if (category === null) {
       return res.status(404).json({ message: 'Category not found' });
     }

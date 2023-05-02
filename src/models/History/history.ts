@@ -1,18 +1,24 @@
 import { Schema, model, Document } from 'mongoose';
 
 export interface IHistory extends Document {
-  idProduct: string;
-  idUser: string;
+  orderId: string;
+  userId: string;
+  date: Date;
+  price: number;
 }
 
 const HistorySchema = new Schema(
   {
-    idProduct: {
+    orderId: {
       type: String,
       required: true
     },
-    idUser: {
+    userId: {
       type: String,
+      required: true
+    },
+    date: {
+      type: Date,
       required: true
     }
   },
